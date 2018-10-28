@@ -12,6 +12,17 @@ type Root struct {
 	Roots map[string]interface{} `json:"roots"`
 }
 
+// Node type does stuff
+type Node struct {
+	Key      string
+	Data     interface{}
+	IsFolder bool
+}
+
+func (n Node) String() string {
+	return fmt.Sprintf("{Key: %v, IsFolder :%v}", n.Key, n.IsFolder)
+}
+
 func main() {
 	fileName := "/home/sendhil/.config/google-chrome/Default/Bookmarks"
 	byteValue, err := ioutil.ReadFile(fileName)
@@ -26,11 +37,23 @@ func main() {
 		panic(err)
 	}
 
-	for key := range roots.Roots {
-		if isFolder(roots.Roots[key]) {
-			fmt.Println(key)
+	nodes := getRootNodes(roots.Roots)
+
+	// Now parse until empty
+	fmt.Println(nodes)
+}
+
+func getRootNodes(roots map[string]interface{}) []Node {
+	nodes := make([]Node, 0)
+
+	for key := range roots {
+		// Is it a folder? If so parse as folder
+		if isFolder(roots[key]) {
+			nodes = append(nodes, Node{Key: key, Data: roots[key], IsFolder: true})
 		}
 	}
+
+	return nodes
 }
 
 func isFolder(item interface{}) bool {
