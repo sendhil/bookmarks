@@ -17,7 +17,7 @@ rofi_dmenu(){
 }
 
 main() {
-  url=$(chrome-bookmarks | rofi_dmenu | xargs -i -0 chrome-bookmarks --find-bookmark-url "{}")
+  url=$(/home/sendhil/go/bin/chrome-bookmarks  | rofi_dmenu | xargs -i -0 /home/sendhil/go/bin/chrome-bookmarks --find-bookmark-url "{}")
   xdg-open $url
 }
 
