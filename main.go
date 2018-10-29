@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 
@@ -8,6 +9,25 @@ import (
 )
 
 func main() {
+	listBookmarks := flag.Bool("list-bookmarks", true, "Whether to list the bookmarks")
+	bookmarkURL := flag.String("find-bookmark-url", "", "The Bookmark URL to find")
+
+	flag.Parse()
+
+	*listBookmarks = len(*bookmarkURL) == 0
+
+	if *listBookmarks {
+		outputBookmarks()
+	} else if *bookmarkURL != "" {
+		findURL(*bookmarkURL)
+	}
+}
+
+func findURL(bookmarkURL string) {
+	fmt.Println("Find bookmark url:", bookmarkURL)
+}
+
+func outputBookmarks() {
 	fileName := "/home/sendhil/.config/google-chrome/Default/Bookmarks"
 	byteValue, err := ioutil.ReadFile(fileName)
 	if err != nil {
