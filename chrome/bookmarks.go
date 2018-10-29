@@ -1,8 +1,7 @@
-package main
+package chrome
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -10,28 +9,8 @@ import (
 	"github.com/buger/jsonparser"
 )
 
-func main() {
-	listBookmarks := flag.Bool("list-bookmarks", true, "Whether to list the bookmarks")
-	bookmark := flag.String("find-bookmark-url", "", "The Bookmark URL to find")
-
-	flag.Parse()
-
-	*listBookmarks = len(*bookmark) == 0
-
-	if *listBookmarks {
-		outputBookmarks()
-	} else if *bookmark != "" {
-		*bookmark = strings.TrimSpace(*bookmark)
-		url, err := findURL(*bookmark)
-		if err != nil {
-			fmt.Println(fmt.Sprintf("Unable to find Bookmark : '%v'", *bookmark))
-		} else {
-			fmt.Println(url)
-		}
-	}
-}
-
-func findURL(bookmark string) (string, error) {
+// Finds URL
+func FindURL(bookmark string) (string, error) {
 	fileName := "/home/sendhil/.config/google-chrome/Default/Bookmarks"
 	byteValue, err := ioutil.ReadFile(fileName)
 	if err != nil {
@@ -92,7 +71,8 @@ func findURL(bookmark string) (string, error) {
 	return "", errors.New("Not Found")
 }
 
-func outputBookmarks() {
+// Outputs Bookmarks
+func OutputBookmarks() {
 	fileName := "/home/sendhil/.config/google-chrome/Default/Bookmarks"
 	byteValue, err := ioutil.ReadFile(fileName)
 	if err != nil {
