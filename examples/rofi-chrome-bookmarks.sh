@@ -6,7 +6,7 @@ rofi_dmenu(){
 }
 
 main() {
-  url=$(/home/sendhil/go/bin/chrome-bookmarks  | rofi_dmenu | xargs -i -0 /home/sendhil/go/bin/chrome-bookmarks --find-bookmark-url "{}")
+  url=$(/home/sendhil/go/bin/chromebookmarks  | rofi_dmenu | xargs -i -0 /home/sendhil/go/bin/chromebookmarks --find-bookmark-url "{}")
   xdg-open $url
 }
 
