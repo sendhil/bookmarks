@@ -10,14 +10,17 @@ import (
 	"github.com/buger/jsonparser"
 )
 
-// Finds URL
-func FindURL(bookmark string) (string, error) {
+func getBookmarksFolder() string {
 	usr, err := user.Current()
 	if err != nil {
 		panic(err)
 	}
-	fileName := fmt.Sprintf("%s/.config/google-chrome/Default/Bookmarks", usr.HomeDir)
-	byteValue, err := ioutil.ReadFile(fileName)
+	return fmt.Sprintf("%s/.config/google-chrome/Default/Bookmarks", usr.HomeDir)
+}
+
+// Finds URL
+func FindURL(bookmark string) (string, error) {
+	byteValue, err := ioutil.ReadFile(getBookmarksFolder())
 	if err != nil {
 		panic(err)
 	}
@@ -78,8 +81,7 @@ func FindURL(bookmark string) (string, error) {
 
 // Outputs Bookmarks
 func OutputBookmarks() {
-	fileName := "/home/sendhil/.config/google-chrome/Default/Bookmarks"
-	byteValue, err := ioutil.ReadFile(fileName)
+	byteValue, err := ioutil.ReadFile(getBookmarksFolder())
 	if err != nil {
 		panic(err)
 	}
