@@ -1,6 +1,7 @@
 package chrome
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -80,7 +81,7 @@ func FindURL(bookmark string) (string, error) {
 }
 
 // Outputs Bookmarks
-func OutputBookmarks() {
+func OutputBookmarks(jsonOutput bool) {
 	byteValue, err := ioutil.ReadFile(getBookmarksFolder())
 	if err != nil {
 		panic(err)
@@ -100,7 +101,11 @@ func OutputBookmarks() {
 		panic(err)
 	}
 
-	bookmarks := make([]string, 0)
+	type bookmarkStruct struct {
+		Text string
+		URL  string
+	}
+	bookmarks := make([]bookmarkStruct, 0)
 
 	for len(nodes) > 0 {
 		if nodeType, err := jsonparser.GetString(nodes[0], "type"); err == nil {
@@ -119,7 +124,12 @@ func OutputBookmarks() {
 					fmt.Println("Error parsing children for:", string(nodes[0]))
 				}
 			} else if nodeType == "url" {
-				bookmarks = append(bookmarks, keyVal)
+				urlVal, err := jsonparser.GetString(nodes[0], "url")
+				if err != nil {
+					fmt.Println("Error parsing:", nodes[0])
+					break
+				}
+				bookmarks = append(bookmarks, bookmarkStruct{Text: keyVal, URL: urlVal})
 			} else {
 				fmt.Println("Unknown node type: ", nodeType)
 			}
@@ -131,7 +141,16 @@ func OutputBookmarks() {
 		nodes = append(nodes[1:])
 	}
 
-	for _, bookmark := range bookmarks {
-		fmt.Println(bookmark)
+	if jsonOutput {
+		outputAsBytes, err := json.Marshal(bookmarks)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(outputAsBytes))
+	} else {
+		for _, bookmark := range bookmarks {
+			fmt.Println(bookmark.Text)
+		}
 	}
+
 }
