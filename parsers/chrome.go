@@ -1,4 +1,4 @@
-package chrome
+package parsers
 
 import (
 	"encoding/json"
@@ -9,9 +9,10 @@ import (
 	"strings"
 
 	"github.com/buger/jsonparser"
+	"github.com/sendhil/bookmarks/common"
 )
 
-func getBookmarksFolder() string {
+func getChromeBookmarksFolder() string {
 	usr, err := user.Current()
 	if err != nil {
 		panic(err)
@@ -19,9 +20,9 @@ func getBookmarksFolder() string {
 	return fmt.Sprintf("%s/.config/google-chrome/Default/Bookmarks", usr.HomeDir)
 }
 
-// Finds URL
-func FindURL(bookmark string) (string, error) {
-	byteValue, err := ioutil.ReadFile(getBookmarksFolder())
+// FindURL finds the URL based on the bookmark name
+func FindChromeBookmarkURL(bookmark string) (string, error) {
+	byteValue, err := ioutil.ReadFile(getChromeBookmarksFolder())
 	if err != nil {
 		panic(err)
 	}
@@ -80,9 +81,9 @@ func FindURL(bookmark string) (string, error) {
 	return "", errors.New("Not Found")
 }
 
-// Outputs Bookmarks
-func OutputBookmarks(jsonOutput bool) {
-	byteValue, err := ioutil.ReadFile(getBookmarksFolder())
+// OutputChromeBookmarks outputs the bookmarks stored by Chrome
+func OutputChromeBookmarks(jsonOutput bool) {
+	byteValue, err := ioutil.ReadFile(getChromeBookmarksFolder())
 	if err != nil {
 		panic(err)
 	}
@@ -101,11 +102,7 @@ func OutputBookmarks(jsonOutput bool) {
 		panic(err)
 	}
 
-	type bookmarkStruct struct {
-		Text string
-		URL  string
-	}
-	bookmarks := make([]bookmarkStruct, 0)
+	bookmarks := make([]common.Bookmark, 0)
 
 	for len(nodes) > 0 {
 		if nodeType, err := jsonparser.GetString(nodes[0], "type"); err == nil {
@@ -129,7 +126,7 @@ func OutputBookmarks(jsonOutput bool) {
 					fmt.Println("Error parsing:", nodes[0])
 					break
 				}
-				bookmarks = append(bookmarks, bookmarkStruct{Text: keyVal, URL: urlVal})
+				bookmarks = append(bookmarks, common.Bookmark{Text: keyVal, URL: urlVal})
 			} else {
 				fmt.Println("Unknown node type: ", nodeType)
 			}
@@ -152,5 +149,4 @@ func OutputBookmarks(jsonOutput bool) {
 			fmt.Println(bookmark.Text)
 		}
 	}
-
 }
